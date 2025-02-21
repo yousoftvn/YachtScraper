@@ -1,5 +1,7 @@
 ﻿using Microsoft.Playwright;
 using YachtScraper.Scrapers;
+using YachtScraper.Services;
+using System.Text.Json;
 
 namespace ConsoleApp1
 {
@@ -7,18 +9,17 @@ namespace ConsoleApp1
     {
         static async Task Main(string[] args)
         {
-            using var playwright = await Playwright.CreateAsync();
-            await using var browser = await playwright.Chromium.LaunchAsync(
-                new BrowserTypeLaunchOptions {
-                    Headless = false
-                }
-              );
-            var context = await browser.NewContextAsync();
-            var page = await context.NewPageAsync();
-            var scraper = new YachtWorldScraper(page);
-            await scraper.GoToAsync();
-           
-
+            var yachtListings = await new ScrapingService().RunAsync();
+            if(yachtListings is null || yachtListings.Count == 0){
+                Console.WriteLine("No data found!");
+                return;
+            }
+            var serializerOption = new JsonSerializerOptions { WriteIndented = true };
+            
+            foreach (var yacht in yachtListings){
+                var json = JsonSerializer.Serialize(yacht,serializerOption);
+                Console.WriteLine(json);
+            }
         }
     }
 }
