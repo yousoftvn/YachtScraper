@@ -22,6 +22,7 @@ public class ScrapingService{
         var page = await context.NewPageAsync();
         var scraper = new YachtWorldScraper(page);
         await scraper.GoToAsync();
+        await ScrapingService.RandomWait();
         return await scraper.DoScrapingAsync();
     }
 }
