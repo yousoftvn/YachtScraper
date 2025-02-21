@@ -14,13 +14,13 @@ public class ScrapingService{
     public async Task<List<YachtListing>> RunAsync(){
         using var playwright = await Playwright.CreateAsync();
         await using var browser = await playwright.Chromium.LaunchAsync(
-            new BrowserTypeLaunchOptions {
-                Headless = Configs.Headless
-            }
+                new BrowserTypeLaunchOptions {
+                    Headless = Configs.Headless
+                }
             );
         var context = await browser.NewContextAsync();
         var page = await context.NewPageAsync();
-        var scraper = new YachtWorldScraper(page);
+        var scraper = new YachtWorldScraper(page,ScrapingMode.ApiResponse);
         await scraper.GoToAsync();
         await ScrapingService.RandomWait();
         return await scraper.DoScrapingAsync();
